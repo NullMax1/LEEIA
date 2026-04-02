@@ -152,57 +152,55 @@
     </div>
 
     <script>
-    const API_KEY = "AIzaSyDmCQcgpN2hYgeh03nFyj1N_Qa3-5nSxwo";
+    // Asegúrate de que esta clave sea EXACTAMENTE la de tu imagen
+    const API_KEY = "AIzaSyDmCQCgpN2Hygeh03nFyj1N_Qa3-5nSxwo"; 
     const chatContainer = document.getElementById('chat-container');
     const userInput = document.getElementById('user-input');
     const typingIndicator = document.getElementById('typing-indicator');
 
     async function sendMessage() {
-    const text = userInput.value.trim();
-    if (text === "") return;
+        const text = userInput.value.trim();
+        if (text === "") return;
 
-    addMessage(text, 'user-message');
-    userInput.value = "";
-    showTyping(true);
+        addMessage(text, 'user-message');
+        userInput.value = "";
+        showTyping(true);
 
-    try {
-        // Cambiamos a la versión v1 y al modelo gemini-pro que es más estable
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`;
-        
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: text }]
-                }]
-            })
-        });
+        try {
+            // ESTA ES LA URL QUE FUNCIONA PARA GEMINI 1.5 FLASH
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+            
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ text: text }]
+                    }]
+                })
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (data.error) {
+            if (data.error) {
+                showTyping(false);
+                addMessage("SISTEMA: " + data.error.message, "ai-message");
+                return;
+            }
+
+            if (data.candidates && data.candidates[0].content) {
+                const aiResponse = data.candidates[0].content.parts[0].text;
+                showTyping(false);
+                addMessage(aiResponse, 'ai-message');
+            } else {
+                showTyping(false);
+                addMessage("SISTEMA: Respuesta sin datos.", "ai-message");
+            }
+        } catch (error) {
             showTyping(false);
-            addMessage("ERROR DE GOOGLE: " + data.error.message, "ai-message");
-            return;
+            addMessage("SISTEMA: Error de red catastrófico.", "ai-message");
         }
-
-        // Estructura de respuesta para gemini-pro
-        if (data.candidates && data.candidates[0].content) {
-            const aiResponse = data.candidates[0].content.parts[0].text;
-            showTyping(false);
-            addMessage(aiResponse, 'ai-message');
-        } else {
-            showTyping(false);
-            addMessage("ERROR: El servidor no envió texto.", "ai-message");
-        }
-    } catch (error) {
-        showTyping(false);
-        addMessage("ERROR DE RED: Intenta de nuevo.", "ai-message");
-        console.error(error);
     }
-}
-
 
     function addMessage(text, className) {
         const msgDiv = document.createElement('div');
