@@ -1,221 +1,51 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NULLX AI SYSTEM</title>
-    <style>
-        :root {
-            --bg: #0a0a0c;
-            --panel: #141417;
-            --accent: #00f2ff;
-            --text: #e0e0e0;
-            --user-msg: #1a1a2e;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        /* Ajuste para que el cuerpo use todo el alto disponible en celular */
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100dvh; /* Usa dynamic viewport height para celulares */
-            overflow: hidden;
-        }
-
-        header {
-            padding: 15px;
-            text-align: center;
-            background: var(--panel);
-            border-bottom: 2px solid var(--accent);
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
-            flex-shrink: 0;
-        }
-
-        header h1 {
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            color: var(--accent);
-            text-transform: uppercase;
-        }
-
-        #chat-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            scroll-behavior: smooth;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message {
-            max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 15px;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            animation: slideIn 0.3s ease forwards;
-            white-space: pre-wrap;
-        }
-
-        .user-message {
-            align-self: flex-end;
-            background: var(--user-msg);
-            border: 1px solid #303050;
-            border-bottom-right-radius: 2px;
-        }
-
-        .ai-message {
-            align-self: flex-start;
-            background: var(--panel);
-            border-left: 3px solid var(--accent);
-            border-bottom-left-radius: 2px;
-        }
-
-        /* Contenedor de abajo fijo */
-        .bottom-area {
-            background: var(--panel);
-            border-top: 1px solid #333;
-            flex-shrink: 0;
-            padding-bottom: env(safe-area-inset-bottom); /* Para celulares modernos */
-        }
-
-        .input-area {
-            padding: 15px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        input {
-            flex: 1;
-            background: #000;
-            border: 1px solid #444;
-            border-radius: 25px;
-            padding: 12px 20px;
-            color: white;
-            outline: none;
-            font-size: 16px; /* Evita que el iPhone haga zoom al escribir */
-        }
-
-        input:focus { border-color: var(--accent); }
-
-        button {
-            background: var(--accent);
-            border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .typing {
-            font-style: italic;
-            font-size: 0.8rem;
-            color: var(--accent);
-            padding: 5px 20px;
-            display: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NULLX AI SYSTEM</title>
+<style>
+:root {
+    --bg:#0a0a0c;--panel:#141417;--accent:#00f2ff;--text:#e0e0e0;--user-msg:#1a1a2e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI';display:flex;flex-direction:column;height:100vh}
+header{padding:15px;text-align:center;background:var(--panel);border-bottom:2px solid var(--accent)}
+#chat-container{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.message{max-width:85%;padding:10px;border-radius:10px}
+.user-message{align-self:flex-end;background:var(--user-msg)}
+.ai-message{align-self:flex-start;background:var(--panel);border-left:3px solid var(--accent)}
+.input-area{display:flex;padding:10px;background:var(--panel)}
+input{flex:1;padding:10px;border-radius:20px;border:none;background:#000;color:#fff}
+button{margin-left:10px;padding:10px;border:none;background:var(--accent);border-radius:50%;cursor:pointer}
+</style>
 </head>
 <body>
+<header><h2>NULLX AI SYSTEM</h2></header>
+<div id="chat-container"></div>
+<div class="input-area">
+<input id="user-input" placeholder="Escribe...">
+<button onclick="sendMessage()">➤</button>
+</div>
+<script>
+// ⚠️ PON TU API KEY AQUÍ (NO COMPARTIR)
+const API_KEY = "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";const chat = document.getElementById("chat-container"); const input = document.getElementById("user-input");
 
-    <header>
-        <h1>NULLX AI SYSTEM</h1>
-    </header>
+function addMessage(text, cls){ const div=document.createElement("div"); div.className="message "+cls; div.innerText=text; chat.appendChild(div); chat.scrollTop=chat.scrollHeight; }
 
-    <div id="chat-container">
-        <div class="message ai-message">SISTEMA EN LÍNEA. Esperando comandos...</div>
-    </div>
+async function sendMessage(){ const text=input.value.trim(); if(!text)return;
 
-    <div class="bottom-area">
-        <div id="typing-indicator" class="typing">IA procesando datos...</div>
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Escribe un mensaje..." autocomplete="off">
-            <button onclick="sendMessage()">
-                <svg viewBox="0 0 24 24" width="22" height="22"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-            </button>
-        </div>
-    </div>
+addMessage(text,"user-message"); input.value="";
 
-    <script>
-    // Asegúrate de que esta clave sea EXACTAMENTE la de tu imagen
-    const API_KEY = "AIzaSyDmCQCgpN2Hygeh03nFyj1N_Qa3-5nSxwo"; 
-    const chatContainer = document.getElementById('chat-container');
-    const userInput = document.getElementById('user-input');
-    const typingIndicator = document.getElementById('typing-indicator');
+const thinking=document.createElement("div"); thinking.className="message ai-message"; thinking.innerText="Pensando..."; chat.appendChild(thinking);
 
-    async function sendMessage() {
-        const text = userInput.value.trim();
-        if (text === "") return;
+try{ const res=await fetch("https://api.openai.com/v1/chat/completions",{ method:"POST", headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+API_KEY }, body:JSON.stringify({ model:"gpt-4o-mini", messages:[{role:"user",content:text}] }) });
 
-        addMessage(text, 'user-message');
-        userInput.value = "";
-        showTyping(true);
+const data=await res.json();
+thinking.innerText=data.choices?.[0]?.message?.content || "Error";
 
-        try {
-            // ESTA ES LA URL QUE FUNCIONA PARA GEMINI 1.5 FLASH
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-            
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: text }]
-                    }]
-                })
-            });
+}catch(e){ thinking.innerText="Error de conexión"; } }
 
-            const data = await response.json();
+input.addEventListener("keypress",e=>{ if(e.key==="Enter")sendMessage(); }); </script>
 
-            if (data.error) {
-                showTyping(false);
-                addMessage("SISTEMA: " + data.error.message, "ai-message");
-                return;
-            }
-
-            if (data.candidates && data.candidates[0].content) {
-                const aiResponse = data.candidates[0].content.parts[0].text;
-                showTyping(false);
-                addMessage(aiResponse, 'ai-message');
-            } else {
-                showTyping(false);
-                addMessage("SISTEMA: Respuesta sin datos.", "ai-message");
-            }
-        } catch (error) {
-            showTyping(false);
-            addMessage("SISTEMA: Error de red catastrófico.", "ai-message");
-        }
-    }
-
-    function addMessage(text, className) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${className}`;
-        msgDiv.innerText = text;
-        chatContainer.appendChild(msgDiv);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    function showTyping(show) {
-        typingIndicator.style.display = show ? 'block' : 'none';
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    userInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") sendMessage();
-    });
-</script>
+</body>
+</html>
