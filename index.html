@@ -1,51 +1,273 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NULLX AI SYSTEM</title>
-<style>
-:root {
-    --bg:#0a0a0c;--panel:#141417;--accent:#00f2ff;--text:#e0e0e0;--user-msg:#1a1a2e;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI';display:flex;flex-direction:column;height:100vh}
-header{padding:15px;text-align:center;background:var(--panel);border-bottom:2px solid var(--accent)}
-#chat-container{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
-.message{max-width:85%;padding:10px;border-radius:10px}
-.user-message{align-self:flex-end;background:var(--user-msg)}
-.ai-message{align-self:flex-start;background:var(--panel);border-left:3px solid var(--accent)}
-.input-area{display:flex;padding:10px;background:var(--panel)}
-input{flex:1;padding:10px;border-radius:20px;border:none;background:#000;color:#fff}
-button{margin-left:10px;padding:10px;border:none;background:var(--accent);border-radius:50%;cursor:pointer}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NULLX AI SYSTEM v4.1</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --panel: #121212;
+            --darker: #050505;
+            --accent: #b0b0b0;
+            --accent-dark: #7a7a7a;
+            --text: #e8e8e8;
+            --text2: #aaaaaa;
+            --user-msg: #1c1c1c;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', 'Georgia', serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Fondo gótico oscuro */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at center, rgba(40,40,40,0.08) 0%, transparent 70%),
+                linear-gradient(rgba(180,180,180,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(180,180,180,0.015) 1px, transparent 1px);
+            background-size: 100% 100%, 60px 60px, 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+            animation: subtleFog 90s linear infinite;
+        }
+
+        @keyframes subtleFog {
+            0% { background-position: 0 0; }
+            100% { background-position: 120px 120px; }
+        }
+
+        header {
+            padding: 22px 20px;
+            text-align: center;
+            background: rgba(18,18,18,0.98);
+            border-bottom: 3px solid var(--accent-dark);
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.7);
+            flex-shrink: 0;
+        }
+
+        header h1 {
+            font-size: 31px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            color: #d0d0d0;
+            text-shadow: 0 0 10px rgba(180,180,180,0.4), 3px 3px 0 rgba(0,0,0,0.6);
+        }
+
+        #chat-container {
+            flex: 1 1 auto;
+            padding: 30px 28px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 5;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-dark) #1a1a1a;
+        }
+
+        #chat-container::-webkit-scrollbar { width: 6px; }
+        #chat-container::-webkit-scrollbar-thumb {
+            background: var(--accent-dark);
+            border-radius: 10px;
+        }
+
+        .message {
+            max-width: 86%;
+            padding: 17px 22px;
+            border-radius: 12px;
+            line-height: 1.6;
+            position: relative;
+            animation: gothicFade 0.6s ease forwards;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.65);
+        }
+
+        @keyframes gothicFade {
+            from { opacity: 0; transform: translateY(35px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: var(--user-msg);
+            border: 1px solid #555;
+            border-radius: 18px 18px 6px 18px;
+        }
+
+        .ai-message {
+            align-self: flex-start;
+            background: var(--panel);
+            border-left: 5px solid var(--accent);
+            border-radius: 6px 16px 16px 16px;
+        }
+
+        .ai-message::before {
+            content: "NULLX";
+            position: absolute;
+            top: -12px;
+            left: 24px;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--accent-dark);
+            background: var(--panel);
+            padding: 0 9px;
+            font-weight: bold;
+        }
+
+        .input-area {
+            padding: 22px 25px;
+            background: rgba(18,18,18,0.98);
+            border-top: 3px solid var(--accent-dark);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            gap: 14px;
+        }
+
+        input {
+            flex: 1;
+            padding: 18px 24px;
+            border-radius: 50px;
+            border: 2px solid #333;
+            background: var(--darker);
+            color: var(--text);
+            font-size: 16.5px;
+            outline: none;
+            transition: all 0.4s ease;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(180,180,180,0.15);
+        }
+
+        button {
+            width: 60px;
+            height: 60px;
+            border: none;
+            background: linear-gradient(145deg, #aaaaaa, #666666);
+            color: #111;
+            font-size: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px rgba(170,170,170,0.4);
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #cccccc, #888888);
+            transform: scale(1.08);
+            box-shadow: 0 0 30px rgba(200,200,200,0.6);
+        }
+
+        .thinking {
+            font-style: italic;
+            color: var(--text2);
+            animation: pulseGothic 2s infinite;
+        }
+
+        @keyframes pulseGothic {
+            0%, 100% { opacity: 0.65; }
+            50% { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
-<header><h2>NULLX AI SYSTEM</h2></header>
-<div id="chat-container"></div>
-<div class="input-area">
-<input id="user-input" placeholder="Escribe...">
-<button onclick="sendMessage()">➤</button>
-</div>
-<script>
-// ⚠️ PON TU API KEY AQUÍ (NO COMPARTIR)
-const API_KEY = "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";const chat = document.getElementById("chat-container"); const input = document.getElementById("user-input");
+    <header>
+        <h1>NULLX AI SYSTEM</h1>
+    </header>
+    
+    <div id="chat-container"></div>
+    
+    <div class="input-area">
+        <input id="user-input" type="text" placeholder="Habla con el vacío...">
+        <button onclick="sendMessage()">➤</button>
+    </div>
 
-function addMessage(text, cls){ const div=document.createElement("div"); div.className="message "+cls; div.innerText=text; chat.appendChild(div); chat.scrollTop=chat.scrollHeight; }
+    <script>
+        const API_KEY = "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";
 
-async function sendMessage(){ const text=input.value.trim(); if(!text)return;
+        const chat = document.getElementById("chat-container");
+        const input = document.getElementById("user-input");
 
-addMessage(text,"user-message"); input.value="";
+        function addMessage(text, cls) {
+            const div = document.createElement("div");
+            div.className = `message ${cls}`;
+            div.innerHTML = text.replace(/\n/g, '<br>');
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
 
-const thinking=document.createElement("div"); thinking.className="message ai-message"; thinking.innerText="Pensando..."; chat.appendChild(thinking);
+        async function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
 
-try{ const res=await fetch("https://api.openai.com/v1/chat/completions",{ method:"POST", headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+API_KEY }, body:JSON.stringify({ model:"gpt-4o-mini", messages:[{role:"user",content:text}] }) });
+            addMessage(text, "user-message");
+            input.value = "";
 
-const data=await res.json();
-thinking.innerText=data.choices?.[0]?.message?.content || "Error";
+            const thinking = document.createElement("div");
+            thinking.className = "message ai-message thinking";
+            thinking.innerText = "El eco responde...";
+            chat.appendChild(thinking);
+            chat.scrollTop = chat.scrollHeight;
 
-}catch(e){ thinking.innerText="Error de conexión"; } }
+            try {
+                const res = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + API_KEY
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4o-mini",
+                        messages: [{ role: "user", content: text }],
+                        temperature: 0.85
+                    })
+                });
 
-input.addEventListener("keypress",e=>{ if(e.key==="Enter")sendMessage(); }); </script>
+                if (!res.ok) throw new Error("Error");
 
+                const data = await res.json();
+                thinking.remove();
+
+                const response = data.choices?.[0]?.message?.content || "Silencio en la oscuridad...";
+                addMessage(response, "ai-message");
+
+            } catch (e) {
+                thinking.innerText = "La conexión se ha perdido en las sombras...";
+            }
+        }
+
+        input.addEventListener("keypress", e => {
+            if (e.key === "Enter") sendMessage();
+        });
+
+        window.onload = () => {
+            setTimeout(() => {
+                addMessage("NULLX v4.1 despierto.<br>En la penumbra, te escucho.", "ai-message");
+            }, 700);
+        };
+    </script>
 </body>
 </html>
